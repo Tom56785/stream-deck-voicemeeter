@@ -40,10 +40,12 @@ npm run pack       # build and package dist/com.thomasalbans.voicemeeter-macros.
 To run your local copy in Stream Deck:
 
 ```sh
-npx streamdeck dev     # turn on developer mode (once)
+npm run dev:enable     # turn on developer mode (once)
 npx streamdeck link com.thomasalbans.voicemeeter-macros.sdPlugin
 npm run watch          # rebuild and restart the plugin on every change
 ```
+
+Run `npm run dev:disable` to turn developer mode off again.
 
 Plugin logs are written to `com.thomasalbans.voicemeeter-macros.sdPlugin/logs`.
 

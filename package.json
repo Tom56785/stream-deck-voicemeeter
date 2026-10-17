@@ -9,7 +9,9 @@
         "watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.thomasalbans.voicemeeter-macros\"",
         "typecheck": "tsc --noEmit",
         "validate": "streamdeck validate com.thomasalbans.voicemeeter-macros.sdPlugin",
-        "pack": "npm run build && streamdeck pack com.thomasalbans.voicemeeter-macros.sdPlugin --output dist --force"
+        "pack": "npm run build && streamdeck pack com.thomasalbans.voicemeeter-macros.sdPlugin --output dist --force",
+        "dev:enable": "streamdeck dev",
+        "dev:disable": "streamdeck dev --disable"
     },
     "type": "module",
     "dependencies": {
