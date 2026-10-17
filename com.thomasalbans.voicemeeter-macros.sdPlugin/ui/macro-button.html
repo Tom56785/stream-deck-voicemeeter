@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<title>Macro Button Settings</title>
+		<meta charset="utf-8" />
+		<!-- Local copy of https://sdpi-components.dev/releases/v4/sdpi-components.js so the settings work offline. -->
+		<script src="sdpi-components.js"></script>
+		<style>
+			.hint {
+				color: #969696;
+				font-size: 9pt;
+				margin: 4px 0 12px 98px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!--
+        Learn more about property inspector components at https://sdpi-components.dev/docs/components
+    -->
+		<sdpi-item label="Button ID">
+			<sdpi-textfield setting="buttonId" pattern="\d+" placeholder="0-79" default="0" required></sdpi-textfield>
+		</sdpi-item>
+		<p class="hint">The logical ID shown in Voicemeeter Macro Buttons. The first button is 0.</p>
+
+		<sdpi-item label="Mode">
+			<sdpi-select setting="mode" default="toggle">
+				<option value="toggle">Toggle</option>
+				<option value="push">Push (hold)</option>
+			</sdpi-select>
+		</sdpi-item>
+		<p class="hint">Toggle flips the button on each press. Push holds it on while the key is held.</p>
+
+		<sdpi-item label="Feedback">
+			<sdpi-checkbox setting="showOk" label="Show checkmark after press"></sdpi-checkbox>
+		</sdpi-item>
+
+		<p class="hint">Set the title, its position and the icon for each state (Off and On) in the settings above, like any other action.</p>
+	</body>
+</html>

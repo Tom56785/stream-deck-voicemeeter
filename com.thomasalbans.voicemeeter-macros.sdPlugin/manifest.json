@@ -1,0 +1,49 @@
+{
+	"$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+	"Name": "Voicemeeter Macros",
+	"Version": "0.1.0.0",
+	"Author": "Thomas Albans",
+	"Actions": [
+		{
+			"Name": "Macro Button",
+			"UUID": "com.thomasalbans.voicemeeter-macros.macro-button",
+			"Icon": "imgs/actions/macro-button/icon",
+			"Tooltip": "Presses a Voicemeeter macro button. The key shows whether the button is on or off.",
+			"PropertyInspectorPath": "ui/macro-button.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"DisableAutomaticStates": true,
+			"States": [
+				{
+					"Name": "Off",
+					"Image": "imgs/actions/macro-button/off"
+				},
+				{
+					"Name": "On",
+					"Image": "imgs/actions/macro-button/on"
+				}
+			]
+		}
+	],
+	"Category": "Voicemeeter Macros",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"CodePath": "bin/plugin.js",
+	"Description": "Voicemeeter macro buttons that use Stream Deck's own titles and icons for each state.",
+	"Icon": "imgs/plugin/marketplace",
+	"SDKVersion": 3,
+	"Software": {
+		"MinimumVersion": "7.1"
+	},
+	"OS": [
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Nodejs": {
+		"Version": "24",
+		"Debug": "enabled"
+	},
+	"UUID": "com.thomasalbans.voicemeeter-macros"
+}
