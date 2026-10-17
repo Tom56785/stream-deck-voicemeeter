@@ -41,7 +41,7 @@ To run your local copy in Stream Deck:
 
 ```sh
 npm run dev:enable     # turn on developer mode (once)
-npx streamdeck link com.thomasalbans.voicemeeter-macros.sdPlugin
+npm run link           # install the plugin folder into Stream Deck as a link (once)
 npm run watch          # rebuild and restart the plugin on every change
 ```
 

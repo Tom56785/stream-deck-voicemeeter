@@ -11,6 +11,7 @@
         "typecheck": "tsc --noEmit",
         "validate": "streamdeck validate com.thomasalbans.voicemeeter-macros.sdPlugin",
         "pack": "npm run build && streamdeck pack com.thomasalbans.voicemeeter-macros.sdPlugin --output dist --force",
+        "link": "streamdeck link com.thomasalbans.voicemeeter-macros.sdPlugin",
         "dev:enable": "streamdeck dev",
         "dev:disable": "streamdeck dev --disable"
     },
