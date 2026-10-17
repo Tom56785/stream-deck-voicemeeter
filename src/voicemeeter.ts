@@ -1,8 +1,8 @@
 import streamDeck from "@elgato/streamdeck";
 import koffi from "koffi";
-import { execFile } from "node:child_process";
 import path from "node:path";
-import { promisify } from "node:util";
+
+import { readRegistryString } from "./registry";
 
 const logger = streamDeck.logger.createScope("Voicemeeter");
 
@@ -144,15 +144,11 @@ export class Voicemeeter {
  * Finds the Voicemeeter install folder from its uninstall entry, falling back to the default location.
  */
 async function findInstallDir(): Promise<string> {
-	try {
-		const { stdout } = await promisify(execFile)("reg", ["query", UNINSTALL_KEY, "/v", "UninstallString"], { windowsHide: true });
-		const match = /UninstallString\s+REG_SZ\s+(.+)/.exec(stdout);
-		if (match) {
-			return path.dirname(match[1].trim().replace(/^"|"$/g, ""));
-		}
-	} catch (err) {
-		logger.warn(`Couldn't read Voicemeeter's install folder from the registry, using the default: ${err}`);
+	const uninstallString = await readRegistryString(UNINSTALL_KEY, "UninstallString");
+	if (uninstallString) {
+		return path.dirname(uninstallString.replace(/^"|"$/g, ""));
 	}
 
+	logger.warn(`Couldn't read Voicemeeter's install folder from the registry, using ${DEFAULT_INSTALL_DIR}`);
 	return DEFAULT_INSTALL_DIR;
 }

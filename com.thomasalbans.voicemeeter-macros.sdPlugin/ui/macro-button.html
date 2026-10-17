@@ -18,10 +18,11 @@
 		<!--
         Learn more about property inspector components at https://sdpi-components.dev/docs/components
     -->
-		<sdpi-item label="Button ID">
-			<sdpi-textfield setting="buttonId" pattern="\d+" placeholder="0-79" default="0" required></sdpi-textfield>
+		<sdpi-item label="Button">
+			<!-- Items come from the plugin, which reads the names from Voicemeeter Macro Buttons' config. -->
+			<sdpi-select setting="buttonId" datasource="getMacroButtons" default="0" show-refresh></sdpi-select>
 		</sdpi-item>
-		<p class="hint">The logical ID shown in Voicemeeter Macro Buttons. The first button is 0.</p>
+		<p class="hint">Names come from Voicemeeter Macro Buttons. After renaming a button there, press refresh to update the list.</p>
 
 		<sdpi-item label="Mode">
 			<sdpi-select setting="mode" default="toggle">

@@ -12,7 +12,7 @@ Unlike other Voicemeeter plugins, it never draws its own title or image. The key
 
 | Setting | Description |
 |---|---|
-| Button ID | Logical ID of the button in Voicemeeter Macro Buttons. The first button is 0. |
+| Button | The macro button to press, listed by its logical ID and name. Named buttons come first, followed by an "Unnamed buttons" group. The names are read from `Documents\Voicemeeter\MacroButtonConfig.xml`; press refresh after renaming a button. If that file can't be read, the list shows Button 0 to Button 79. |
 | Mode | **Toggle** flips the button on each press. **Push** holds it on while the key is held. |
 | Show checkmark after press | Shows Stream Deck's checkmark after a successful press. |
 
@@ -52,6 +52,7 @@ Plugin logs are written to `com.thomasalbans.voicemeeter-macros.sdPlugin/logs`.
 ### How it works
 
 - `src/voicemeeter.ts` calls the Voicemeeter Remote API (`VoicemeeterRemote64.dll`) through [Koffi](https://koffi.dev/). It finds the install folder from Voicemeeter's uninstall registry entry. While a Macro Button key is visible, it asks Voicemeeter every 100 ms whether any macro button changed.
-- `src/actions/macro-button.ts` handles key presses and calls `setState` to keep each key in step with its button.
+- `src/actions/macro-button.ts` handles key presses and calls `setState` to keep each key in step with its button. It also supplies the items for the settings panel's button dropdown.
+- `src/macro-button-config.ts` reads button names from Voicemeeter Macro Buttons' config file. The Remote API has no way to read them.
 - Rollup bundles Koffi's JavaScript, but its native binary can't be bundled, so the build copies `@koromix/koffi-win32-x64` into `bin/node_modules`, where Koffi looks for it.
 - `ui/sdpi-components.js` is a local copy of [sdpi-components](https://sdpi-components.dev/) v4, so the settings panel works offline.

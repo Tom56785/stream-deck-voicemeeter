@@ -1,15 +1,22 @@
-import {
+import streamDeck, {
 	action,
 	DidReceiveSettingsEvent,
 	KeyAction,
 	KeyDownEvent,
 	KeyUpEvent,
+	SendToPluginEvent,
 	SingletonAction,
 	WillAppearEvent,
 	WillDisappearEvent
 } from "@elgato/streamdeck";
 
+import { type MacroButtonInfo, readMacroButtons } from "../macro-button-config";
 import type { Voicemeeter } from "../voicemeeter";
+
+/**
+ * `datasource` of the button dropdown in `ui/macro-button.html`.
+ */
+const BUTTONS_DATASOURCE = "getMacroButtons";
 
 /**
  * Presses a Voicemeeter macro button, and keeps the key's state (0 = OFF, 1 = ON) in sync with the button.
@@ -62,6 +69,22 @@ export class MacroButton extends SingletonAction<MacroButtonSettings> {
 		if (ev.action.isKey()) {
 			this.#refresh(ev.action, ev.payload.settings);
 		}
+	}
+
+	/**
+	 * Answers the property inspector's request for the button dropdown's items: named buttons first, then the unnamed ones in a group.
+	 */
+	override async onSendToPlugin(ev: SendToPluginEvent<DataSourceRequest, MacroButtonSettings>): Promise<void> {
+		if (ev.payload.event !== BUTTONS_DATASOURCE) {
+			return;
+		}
+
+		const buttons = await readMacroButtons();
+		const named = buttons.filter((button) => button.name).map((button) => ({ label: formatButton(button), value: String(button.id) }));
+		const unnamed = buttons.filter((button) => !button.name).map((button) => ({ label: `Button ${button.id}`, value: String(button.id) }));
+		const items = named.length > 0 && unnamed.length > 0 ? [...named, { label: "Unnamed buttons", children: unnamed }] : [...named, ...unnamed];
+
+		await streamDeck.ui.sendToPropertyInspector({ event: BUTTONS_DATASOURCE, items });
 	}
 
 	override async onKeyDown(ev: KeyDownEvent<MacroButtonSettings>): Promise<void> {
@@ -149,7 +172,7 @@ export class MacroButton extends SingletonAction<MacroButtonSettings> {
  */
 type MacroButtonSettings = {
 	/**
-	 * Logical ID of the macro button, as shown in Voicemeeter Macro Buttons (0-79). Text fields store it as a string.
+	 * Logical ID of the macro button, as shown in Voicemeeter Macro Buttons (0-79). The property inspector stores it as a string.
 	 */
 	buttonId?: number | string;
 
@@ -163,6 +186,21 @@ type MacroButtonSettings = {
 	 */
 	showOk?: boolean;
 };
+
+/**
+ * Message sent by sdpi-components when a dropdown with a `datasource` needs its items.
+ */
+type DataSourceRequest = {
+	event?: string;
+	isRefresh?: boolean;
+};
+
+/**
+ * Formats a named button for the dropdown, e.g. "0: Auto ducking (Desktop audio)".
+ */
+function formatButton(button: MacroButtonInfo): string {
+	return `${button.id}: ${button.name}${button.subname ? ` (${button.subname})` : ""}`;
+}
 
 /**
  * Parses the button ID setting; a missing ID means button 0, matching the property inspector's default.
