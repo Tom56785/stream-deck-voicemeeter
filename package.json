@@ -4,6 +4,7 @@
     "private": true,
     "description": "Stream Deck plugin for Voicemeeter macro buttons that leaves titles and icons to Stream Deck.",
     "author": "Thomas Albans",
+    "license": "MIT",
     "scripts": {
         "build": "rollup -c",
         "watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.thomasalbans.voicemeeter-macros\"",
