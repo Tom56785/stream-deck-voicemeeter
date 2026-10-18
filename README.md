@@ -14,6 +14,8 @@ Unlike other Voicemeeter plugins, it never draws its own title or image. The key
 |---|---|
 | Button | The macro button to press, listed by its logical ID and name. Named buttons come first, followed by an "Unnamed buttons" group. The names are read from `Documents\Voicemeeter\MacroButtonConfig.xml`; press refresh after renaming a button. If that file can't be read, the list shows Button 0 to Button 79. |
 | Mode | **Toggle** flips the button on each press. **Push** holds it on while the key is held. |
+| Toggle again on release | Toggle mode only. Pressing the key toggles the button straight away as usual; if you hold it for at least the **Hold time**, releasing it toggles the button again. Off by default. |
+| Hold time (ms) | How long, in milliseconds, the key must be held for its release to toggle the button again (1000 = 1 second). Defaults to 2000. |
 | Show checkmark after press | Shows Stream Deck's checkmark after a successful press. |
 
 If the button can't be pressed (for example Voicemeeter isn't running), the key shows Stream Deck's warning triangle.
@@ -44,6 +46,8 @@ npm run dev:enable     # turn on developer mode (once)
 npm run link           # install the plugin folder into Stream Deck as a link (once)
 npm run watch          # rebuild and restart the plugin on every change
 ```
+
+After a one-off `npm run build`, run `npm run restart` so Stream Deck loads the new code.
 
 Run `npm run dev:disable` to turn developer mode off again.
 

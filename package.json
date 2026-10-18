@@ -12,6 +12,7 @@
         "validate": "streamdeck validate com.thomasalbans.voicemeeter-macros.sdPlugin",
         "pack": "npm run build && streamdeck pack com.thomasalbans.voicemeeter-macros.sdPlugin --output dist --force",
         "link": "streamdeck link com.thomasalbans.voicemeeter-macros.sdPlugin",
+        "restart": "streamdeck restart com.thomasalbans.voicemeeter-macros",
         "dev:enable": "streamdeck dev",
         "dev:disable": "streamdeck dev --disable"
     },

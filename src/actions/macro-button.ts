@@ -19,6 +19,11 @@ import type { Voicemeeter } from "../voicemeeter";
 const BUTTONS_DATASOURCE = "getMacroButtons";
 
 /**
+ * How long the key must be held to toggle the button again on release, when the hold time setting is missing or invalid.
+ */
+const DEFAULT_HOLD_MS = 2000;
+
+/**
  * Presses a Voicemeeter macro button, and keeps the key's state (0 = OFF, 1 = ON) in sync with the button.
  *
  * The plugin never sets a title or image. Both come from the user's Stream Deck settings for each state, so the title position, font
@@ -38,6 +43,12 @@ export class MacroButton extends SingletonAction<MacroButtonSettings> {
 	 */
 	readonly #shownStates = new Map<string, 0 | 1>();
 
+	/**
+	 * When each held key was pressed, by action ID, for Toggle keys that toggle again when held, so the release can tell a long press
+	 * from a short one.
+	 */
+	readonly #pressedAt = new Map<string, number>();
+
 	constructor(voicemeeter: Voicemeeter) {
 		super();
 		this.#voicemeeter = voicemeeter;
@@ -56,6 +67,7 @@ export class MacroButton extends SingletonAction<MacroButtonSettings> {
 	override onWillDisappear(ev: WillDisappearEvent<MacroButtonSettings>): void {
 		this.#settings.delete(ev.action.id);
 		this.#shownStates.delete(ev.action.id);
+		this.#pressedAt.delete(ev.action.id);
 
 		if (this.#settings.size === 0) {
 			this.#voicemeeter.stopPolling();
@@ -111,6 +123,10 @@ export class MacroButton extends SingletonAction<MacroButtonSettings> {
 			ok = current !== undefined && this.#voicemeeter.setButton(button, target);
 
 			if (ok && !ev.payload.isInMultiAction) {
+				if (settings.toggleAgainWhenHeld) {
+					this.#pressedAt.set(ev.action.id, Date.now());
+				}
+
 				await this.#show(ev.action, target ? 1 : 0);
 			}
 		}
@@ -125,6 +141,30 @@ export class MacroButton extends SingletonAction<MacroButtonSettings> {
 	override async onKeyUp(ev: KeyUpEvent<MacroButtonSettings>): Promise<void> {
 		const { settings } = ev.payload;
 		const button = parseButtonId(settings.buttonId);
+		const pressedAt = this.#pressedAt.get(ev.action.id);
+		this.#pressedAt.delete(ev.action.id);
+
+		if (pressedAt !== undefined && button !== undefined) {
+			// The press already toggled the button; a long one toggles it again.
+			if (Date.now() - pressedAt < parseHoldTime(settings.holdMs)) {
+				return;
+			}
+
+			const current = this.#voicemeeter.getButton(button);
+			const ok = current !== undefined && this.#voicemeeter.setButton(button, !current);
+			if (!ok) {
+				await ev.action.showAlert();
+				return;
+			}
+
+			await this.#show(ev.action, current ? 0 : 1);
+			if (settings.showOk) {
+				await ev.action.showOk();
+			}
+
+			return;
+		}
+
 		if (settings.mode !== "push" || ev.payload.isInMultiAction || button === undefined) {
 			return;
 		}
@@ -185,6 +225,16 @@ type MacroButtonSettings = {
 	 * Whether to show Stream Deck's checkmark after a successful press.
 	 */
 	showOk?: boolean;
+
+	/**
+	 * In Toggle mode, whether releasing the key after holding it for {@link holdMs} toggles the button again, undoing the press.
+	 */
+	toggleAgainWhenHeld?: boolean;
+
+	/**
+	 * How long the key must be held to toggle the button again on release, in milliseconds. The property inspector stores it as a string.
+	 */
+	holdMs?: number | string;
 };
 
 /**
@@ -208,4 +258,12 @@ function formatButton(button: MacroButtonInfo): string {
 function parseButtonId(value: MacroButtonSettings["buttonId"]): number | undefined {
 	const id = Number(value ?? 0);
 	return value !== "" && Number.isInteger(id) && id >= 0 ? id : undefined;
+}
+
+/**
+ * Parses the hold time setting, in milliseconds; a missing, invalid or zero time means {@link DEFAULT_HOLD_MS}.
+ */
+function parseHoldTime(value: MacroButtonSettings["holdMs"]): number {
+	const ms = Number(value);
+	return Number.isFinite(ms) && ms > 0 ? ms : DEFAULT_HOLD_MS;
 }

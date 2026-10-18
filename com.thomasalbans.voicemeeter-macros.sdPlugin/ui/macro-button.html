@@ -32,6 +32,14 @@
 		</sdpi-item>
 		<p class="hint">Toggle flips the button on each press. Push holds it on while the key is held.</p>
 
+		<sdpi-item label="Long press">
+			<sdpi-checkbox setting="toggleAgainWhenHeld" label="Toggle again on release"></sdpi-checkbox>
+		</sdpi-item>
+		<sdpi-item label="Hold time (ms)">
+			<sdpi-textfield setting="holdMs" default="2000" pattern="[0-9]+" required></sdpi-textfield>
+		</sdpi-item>
+		<p class="hint">Toggle mode only. Pressing the key still toggles the button straight away. If you hold it for at least this many milliseconds (1000 = 1 second), releasing it toggles the button back.</p>
+
 		<sdpi-item label="Feedback">
 			<sdpi-checkbox setting="showOk" label="Show checkmark after press"></sdpi-checkbox>
 		</sdpi-item>
